@@ -1,0 +1,9 @@
+
+To set up the appliaction
+run 'docker-compose up --build' in root folder
+open browser on 'localhost:8000'
+
+TODO
+-------------
+customer crud
+fix page view

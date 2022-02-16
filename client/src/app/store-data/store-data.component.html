@@ -1,0 +1,141 @@
+<div class="card">
+  <p-toolbar styleClass="p-mb-4">
+    <ng-template pTemplate="left">
+      <button pButton
+        pRipple
+        label="New"
+        icon="pi pi-plus"
+        class="p-button-success p-mr-2"
+        (click)="openNew()"></button>
+    </ng-template>
+  </p-toolbar>
+
+  <p-table #dt
+    [value]="transactions"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['sale_id','product_id','customer.first_name','customer.last_name','customer.gender','customer.total_price','customer.country','date']"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true">
+    <ng-template pTemplate="caption">
+      <div class="p-d-flex p-ai-center p-jc-between">
+        <h5 class="p-m-0">Manage Transactions</h5>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText
+            type="text"
+            (input)="dt.filterGlobal($event.target.value, 'contains')"
+            placeholder="Search..." />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="sale_id">Sale Id<p-sortIcon field="sale_id"></p-sortIcon>
+        </th>
+        <th pSortableColumn="product_id">Product Id<p-sortIcon field="product_id"></p-sortIcon>
+        </th>
+        <th pSortableColumn="customer.first_name">Customer First Name<p-sortIcon field="customer.first_name">
+          </p-sortIcon>
+        </th>
+        <th pSortableColumn="customer.last_name">Customer Last Name<p-sortIcon field="customer.last_name">
+          </p-sortIcon>
+        </th>
+        <th pSortableColumn="customer.gender">Customer Gender<p-sortIcon field="customer.gender">
+          </p-sortIcon>
+        </th>
+        <th pSortableColumn="customer.total_price">Customer Total Price<p-sortIcon field="customer.total_price">
+          </p-sortIcon>
+        </th>
+        <th pSortableColumn="customer.country">Customer Country<p-sortIcon field="customer.country">
+          </p-sortIcon>
+        </th>
+        <th pSortableColumn="date">Date<p-sortIcon field="date"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body"
+      let-transaction>
+      <tr>
+        <td>{{ transaction.sale_id }}</td>
+        <td>{{ transaction.product_id }}</td>
+        <td>{{ transaction.customer.first_name }}</td>
+        <td>{{ transaction.customer.last_name }}</td>
+        <td>{{ transaction.customer.gender }}</td>
+        <td>{{ transaction.customer.total_price | currency: transaction.customer.currency }}</td>
+        <td>{{ transaction.customer.country }}</td>
+        <td>{{ transaction.date | date: 'dd/MM/yyyy, h:mm a' }}</td>
+        <td>
+          <button pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-success p-mr-2"
+            (click)="editTransaction(transaction)"></button>
+          <button pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="deleteTranscation(transaction)"></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between">
+        In total there are {{transactions ? transactions.length : 0 }} transactions.
+      </div>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [(visible)]="transactionDialog"
+  [style]="{width: '450px'}"
+  header="Transcation Details"
+  [modal]="true"
+  styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="product_id">Product Id</label>
+      <input type="text"
+        pInputText
+        id="product_id"
+        [(ngModel)]="transaction.product_id"
+        required
+        autofocus />
+      <small class="p-error"
+        *ngIf="submitted && !transaction.product_id">Product Id is required.</small>
+    </div>
+
+    <div class="p-field">
+      <label for="customer">Customer</label>
+      <p-dropdown [(ngModel)]="transaction.customer"
+        appendTo="body"
+        inputId="customer"
+        [options]="customers"
+        placeholder="Select">
+        <ng-template let-option
+          pTemplate="item">
+          <span>{{ option.label }}</span>
+        </ng-template>
+      </p-dropdown>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="hideDialog()"></button>
+    <button pButton
+      pRipple
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="saveTranscation()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
